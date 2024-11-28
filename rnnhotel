@@ -1,0 +1,29 @@
+import numpy as np
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import SimpleRNN, Dense, Embedding
+
+# Деректер
+questions = [
+    "Сәлем", "Бөлмелер туралы", "Бағалар", "Қызметтер", "Рақмет", "Сау болыңыз"
+]
+answers = [
+    "Қонақ үйімізге қош келдіңіз!", 
+    "Бізде әртүрлі деңгейдегі бөлмелер бар: стандарт, люкс және отбасылық.",
+    "Бөлме бағалары 10 000 теңгеден басталады.",
+    "Wi-Fi, таңғы ас, фитнес-зал және бассейн қолжетімді.",
+    "Рақмет! Біз сізге көмектесуге қуаныштымыз.", 
+    "Сау болыңыз! Жақсы күн тілейміз."
+]
+
+# Сөздік құру
+vocab = list(set(" ".join(questions + answers).lower().split()))
+word_index = {word: i+1 for i, word in enumerate(vocab)}
+
+# Деректерді сандық форматқа түрлендіру
+max_length = 10  # Максималды сөйлем ұзындығы
+def encode_sentence(sentence, word_index, max_length):
+    tokens = [word_index.get(word, 0) for word in sentence.lower().split()]
+    return np.pad(tokens, (0, max_length - len(tokens)), mode='constant')
+
+X = np.array([encode_sentence(q, word_index, max_length) for q in questions])
+y = np.array([encode_sentence(a, word_index, max_length) for a in answers])
